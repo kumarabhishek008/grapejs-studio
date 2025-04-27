@@ -4,6 +4,11 @@ import "@grapesjs/studio-sdk/style";
 
 const GrapesJsStudioBuilder = () => {
   const [editor, seteditor] = useState(null);
+  const [pages, setPages] = useState([
+    { name: "Home", component: "<h1>Home page</h1>" },
+    { name: "About", component: "<h1>About page</h1>" },
+    { name: "Contact", component: "<h1>Contact page</h1>" },
+  ]);
 
   function saveToSessionStorage(key, project) {
     sessionStorage.setItem(key, JSON.stringify(project));
@@ -25,6 +30,8 @@ const GrapesJsStudioBuilder = () => {
           draggable: true,
           droppable: true,
           resizable: true,
+          // stylable: ["width", "height", "display", "color"],
+          // unstylable: ["color"],
           traits: [
             {
               type: "input",
@@ -60,8 +67,20 @@ const GrapesJsStudioBuilder = () => {
       label: "My Custom Element",
       category: "Custom",
       content: `
-      <button>Click me</button>
+      <button class="my-custom-element">Click me</button>
       `,
+    });
+  }
+
+  function addStyles(editor) {
+    console.log(editor.StyleManager.sectors);
+    editor.StyleManager.sectors.add({
+      id: "new_sector",
+      name: "New",
+      properties: ["width", "display"],
+    });
+    editor.on("style:property:update", (m) => {
+      console.log(m, "dfdvfdvd");
     });
   }
 
@@ -97,15 +116,19 @@ const GrapesJsStudioBuilder = () => {
         onEditor: (editor) => {
           seteditor(editor);
           addNewComponentType(editor);
+          addStyles(editor);
+          window.editor = editor;
+          editor.runCommand("studio:layoutToggle", {
+            id: "gs",
+            layout: "panelGlobalStyles",
+            header: { label: "Global Styles" },
+            placer: { type: "absolute", position: "right" },
+          });
         },
         project: {
           type: "web",
           default: {
-            pages: [
-              { name: "Home", component: "<h1>Home page</h1>" },
-              { name: "About", component: "<h1>About page</h1>" },
-              { name: "Contact", component: "<h1>Contact page</h1>" },
-            ],
+            pages: [...pages],
           },
         },
         i18n: {
@@ -118,6 +141,32 @@ const GrapesJsStudioBuilder = () => {
               },
             },
           },
+        },
+        globalStyles: {
+          default: [
+            {
+              id: "buttonColor",
+              property: "color",
+              field: "color",
+              defaultValue: "red",
+              selector: "button",
+              label: "button color",
+            },
+            {
+              id: "buttonsize",
+              property: "font-size",
+              field: {
+                type: "number",
+                min: 0.1,
+                max: 10,
+                step: 0.1,
+                units: ["rem"],
+              },
+              defaultValue: "2rem",
+              selector: "button",
+              label: "size",
+            },
+          ],
         },
         plugins: [
           // "grapesjs-preset-webpage",
