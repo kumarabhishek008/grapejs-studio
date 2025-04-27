@@ -85,121 +85,125 @@ const GrapesJsStudioBuilder = () => {
   }
 
   return (
-    <StudioEditor
-      style={{
-        width: "100vw",
-        height: "100vh",
-      }}
-      options={{
-        // ...
-        storage: {
-          type: "self",
-          // autosaveChanges: 5,
-          // // save after every 10 seconds
-          // autosaveIntervalMs: 10000,
-          onSave: async ({ project }) => {
-            await saveToSessionStorage("DEMO_PROJECT_ID", project);
-            console.log("Project saved", { project });
-          },
-          onLoad: async () => {
-            const project = await loadFromSessionStorage("DEMO_PROJECT_ID");
-            console.log("Project loaded", { project });
+    <>
+      <div id="pages" style={{ position: "absolute", top: 0, left: 0 }} />
+      <StudioEditor
+        style={{
+          width: "100vw",
+          height: "100vh",
+        }}
+        options={{
+          // ...
+          storage: {
+            type: "self",
+            // autosaveChanges: 5,
+            // // save after every 10 seconds
+            // autosaveIntervalMs: 10000,
+            onSave: async ({ project }) => {
+              await saveToSessionStorage("DEMO_PROJECT_ID", project);
+              console.log("Project saved", { project });
+            },
+            onLoad: async () => {
+              const project = await loadFromSessionStorage("DEMO_PROJECT_ID");
+              console.log("Project loaded", { project });
 
-            // If the project doesn't exist (eg. first load), let's return a new one.
-            return {
-              project: project || {
-                pages: [{ name: "Home", component: "<h1>New project</h1>" }],
-              },
-            };
+              // If the project doesn't exist (eg. first load), let's return a new one.
+              return {
+                project: project || {
+                  pages: [{ name: "Home", component: "<h1>New project</h1>" }],
+                },
+              };
+            },
           },
-        },
-        onEditor: (editor) => {
-          seteditor(editor);
-          addNewComponentType(editor);
-          addStyles(editor);
-          window.editor = editor;
-          editor.runCommand("studio:layoutToggle", {
-            id: "gs",
-            layout: "panelGlobalStyles",
-            header: { label: "Global Styles" },
-            placer: { type: "absolute", position: "right" },
-          });
-        },
-        project: {
-          type: "web",
-          default: {
-            pages: [...pages],
+          onEditor: (editor) => {
+            seteditor(editor);
+            addNewComponentType(editor);
+            addStyles(editor);
+            window.editor = editor;
+            editor.Pages.__appendTo({ el: "#pages" });
+            editor.runCommand("studio:layoutToggle", {
+              id: "gs",
+              layout: "panelGlobalStyles",
+              header: { label: "Global Styles" },
+              placer: { type: "absolute", position: "right" },
+            });
           },
-        },
-        i18n: {
-          locales: {
-            en: {
-              actions: {
-                importCode: {
-                  content: "Paste here your MJML code and click Import",
+          project: {
+            type: "web",
+            default: {
+              pages: [...pages],
+            },
+          },
+          i18n: {
+            locales: {
+              en: {
+                actions: {
+                  importCode: {
+                    content: "Paste here your MJML code and click Import",
+                  },
                 },
               },
             },
           },
-        },
-        globalStyles: {
-          default: [
-            {
-              id: "buttonColor",
-              property: "color",
-              field: "color",
-              defaultValue: "red",
-              selector: "button",
-              label: "button color",
-            },
-            {
-              id: "buttonsize",
-              property: "font-size",
-              field: {
-                type: "number",
-                min: 0.1,
-                max: 10,
-                step: 0.1,
-                units: ["rem"],
+          globalStyles: {
+            default: [
+              {
+                id: "buttonColor",
+                property: "color",
+                field: "color",
+                defaultValue: "red",
+                selector: "button",
+                label: "button color",
               },
-              defaultValue: "2rem",
-              selector: "button",
-              label: "size",
-            },
+              {
+                id: "buttonsize",
+                property: "font-size",
+                field: {
+                  type: "number",
+                  min: 0.1,
+                  max: 10,
+                  step: 0.1,
+                  units: ["rem"],
+                },
+                defaultValue: "2rem",
+                selector: "button",
+                label: "size",
+              },
+            ],
+          },
+          plugins: [
+            // "grapesjs-preset-webpage",
+            // "grapesjs-lory-slider",
+            // "grapesjs-tabs",
+            // "grapesjs-custom-code",
+            // "grapesjs-touch",
+            // "grapesjs-parser-postcss",
+            // "grapesjs-style-gradient",
+            // "grapesjs-style-filter",
+            // "grapesjs-style-bg",
+            // "grapesjs-style-border",
+            // "grapesjs-style-text",
+            // "grapesjs-style-box",
+            // "grapesjs-style-flex",
+            // "grapesjs-style-grid",
+            // "grapesjs-style-import",
+            // "grapesjs-style-manager",
+            // "grapesjs-style-align",
+            // "grapesjs-style-clear",
+            // "grapesjs-style-inherit",
+            // "grapesjs-style-shadow",
+            // "grapesjs-style-size",
+            // "grapesjs-style-spacing",
+            // "grapesjs-style-text-shadow",
+            // "grapesjs-style-trait",
+            // "grapesjs-style-visibility",
+            // "grapesjs-style-text-align",
+            // "grapesjs-style-text-decoration",
+            // "grapesjs-style-text-transform",
           ],
-        },
-        plugins: [
-          // "grapesjs-preset-webpage",
-          // "grapesjs-lory-slider",
-          // "grapesjs-tabs",
-          // "grapesjs-custom-code",
-          // "grapesjs-touch",
-          // "grapesjs-parser-postcss",
-          // "grapesjs-style-gradient",
-          // "grapesjs-style-filter",
-          // "grapesjs-style-bg",
-          // "grapesjs-style-border",
-          // "grapesjs-style-text",
-          // "grapesjs-style-box",
-          // "grapesjs-style-flex",
-          // "grapesjs-style-grid",
-          // "grapesjs-style-import",
-          // "grapesjs-style-manager",
-          // "grapesjs-style-align",
-          // "grapesjs-style-clear",
-          // "grapesjs-style-inherit",
-          // "grapesjs-style-shadow",
-          // "grapesjs-style-size",
-          // "grapesjs-style-spacing",
-          // "grapesjs-style-text-shadow",
-          // "grapesjs-style-trait",
-          // "grapesjs-style-visibility",
-          // "grapesjs-style-text-align",
-          // "grapesjs-style-text-decoration",
-          // "grapesjs-style-text-transform",
-        ],
-      }}
-    />
+        }}
+      />
+    </>
   );
 };
 
