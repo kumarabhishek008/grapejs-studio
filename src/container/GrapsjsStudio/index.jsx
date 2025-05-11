@@ -5,7 +5,7 @@ import "@grapesjs/studio-sdk/style";
 const GrapesJsStudioBuilder = () => {
   const [editor, seteditor] = useState(null);
   const [pages, setPages] = useState([
-    { name: "Home", component: "<h1>Home page</h1>" },
+    { name: "Home", component: "<h1>Home page</h1>", settings: {} },
     { name: "About", component: "<h1>About page</h1>" },
     { name: "Contact", component: "<h1>Contact page</h1>" },
   ]);
@@ -73,15 +73,64 @@ const GrapesJsStudioBuilder = () => {
   }
 
   function addStyles(editor) {
-    console.log(editor.StyleManager.sectors);
     editor.StyleManager.sectors.add({
       id: "new_sector",
       name: "New",
-      properties: ["width", "display"],
+      properties: [
+        {
+          type: "composite",
+          property: "border-radius",
+          label: "border-radius",
+          // Additional props
+          properties: [
+            {
+              type: "number",
+              units: ["px"],
+              default: "0",
+              property: "border-top-left-radius",
+            },
+            {
+              type: "number",
+              units: ["px"],
+              default: "0",
+              property: "border-top-right-radius",
+            },
+            {
+              type: "number",
+              units: ["px"],
+              default: "0",
+              property: "border-bottom-left-radius",
+            },
+            {
+              type: "number",
+              units: ["px"],
+              default: "0",
+              property: "border-bottom-right-radius",
+            },
+          ],
+        },
+      ],
     });
+
     editor.on("style:property:update", (m) => {
       console.log(m, "dfdvfdvd");
     });
+  }
+  function addNewPage(editor) {
+    console.log("add new page");
+    editor.Pages.add({
+      id: Date.now(),
+      name: "dvdfvdfv",
+      component: "<h1>New page</h1>",
+    });
+  }
+
+  function removePage() {
+    console.log("remove page");
+  }
+
+  function duplicatePage() {
+    console.log("duplicate page");
   }
 
   return (
@@ -93,6 +142,34 @@ const GrapesJsStudioBuilder = () => {
           height: "100vh",
         }}
         options={{
+          pages: {
+            add: (page) => {
+              console.log("add page", page);
+              addNewPage(page.editor);
+            },
+            remove: ({ editor, page }) => {
+              console.log("remove page", page);
+              editor.Pages.remove(page);
+            },
+            duplicate: ({ editor, page }) => {
+              console.log("duplicate page", page);
+              editor.Pages.add({ ...page, id: Date.now() }, { select: true });
+            },
+            commandItems: ({ items }) => {
+              console.log("command items", items);
+              return [
+                ...items,
+                {
+                  id: "new-item",
+                  label: "New Item",
+                  cmd: () => {
+                    console.log("new item");
+                  },
+                },
+              ];
+            },
+            // settings: false,
+          },
           // ...
           storage: {
             type: "self",
@@ -132,6 +209,21 @@ const GrapesJsStudioBuilder = () => {
             type: "web",
             default: {
               pages: [...pages],
+              custom: {
+                projectName: "My Project",
+                globalPageSettings: {
+                  title: "Global title",
+                  description: "Global description",
+                  customCodeHead: `
+              <meta name="meta-global" content="Global meta"/>
+              <link href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css" rel="stylesheet">
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+              <script>console.log('[GLOBAL]: Custom HTML head');</script>
+              <style>.title { font-size: 5rem; }</style>
+            `,
+                  customCodeBody: "<div>Global Custom HTML body</div>",
+                },
+              },
             },
           },
           i18n: {
